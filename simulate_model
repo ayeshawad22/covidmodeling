@@ -1,0 +1,120 @@
+% simulate_model.m
+
+format long
+
+% Load the parameters
+p = load_parameters();
+
+% Define the time span for the simulation
+tspan = [0 30];
+
+% Simulate the model
+[time, sol] = COVID_IMMUNE_MODEL(p, tspan);
+
+% Plot the results
+figure;
+subplot(4, 1, 1);
+plot(time, sol(1, :));
+title('Virus Dynamics');
+xlabel('Time (days)');
+ylabel('Viral Load (copies/mL)');
+
+subplot(4, 1, 2);
+plot(time, sol(2, :));
+title('Susceptible Cells Dynamics');
+xlabel('Time (days)');
+ylabel('Susceptible Cells (10^9 cells/mL)');
+
+subplot(4, 1, 3);
+plot(time, sol(3, :));
+title('Infected Cells Dynamics');
+xlabel('Time (days)');
+ylabel('Infected Cells (10^9 cells/mL)');
+
+subplot(4, 1, 4);
+plot(time, sol(4, :));
+title('Resistant Cells Dynamics');
+xlabel('Time (days)');
+ylabel('Resistant Cells (10^9 cells/mL)');
+
+figure;
+subplot(4, 1, 1);
+plot(time, sol(5, :));
+title('Dead Cells Dynamics');
+xlabel('Time (days)');
+ylabel('Dead Cells (10^9 cells/mL)');
+
+subplot(4, 1, 2);
+plot(time, sol(6, :));
+title('Resident Macrophages Dynamics');
+xlabel('Time (days)');
+ylabel('Resident Macrophages (10^9 cells/mL)');
+
+subplot(4, 1, 3);
+plot(time, sol(7, :));
+title('Inflammatory Macrophages Dynamics');
+xlabel('Time (days)');
+ylabel('Inflammatory Macrophages (10^9 cells/mL)');
+
+subplot(4, 1, 4);
+plot(time, sol(8, :));
+title('Neutrophils Dynamics');
+xlabel('Time (days)');
+ylabel('Neutrophils (10^9 cells/mL)');
+
+figure;
+subplot(3, 1, 1);
+plot(time, sol(9, :));
+title('Natural Killer Cells Dynamics');
+xlabel('Time (days)');
+ylabel('Natural Killer Cells (10^9 cells/mL)');
+
+subplot(3, 1, 2);
+plot(time, sol(10, :));
+title('Unbound IFN-I Dynamics');
+xlabel('Time (days)');
+ylabel('Unbound IFN-I (pg/mL)');
+
+subplot(3, 1, 3);
+plot(time, sol(11, :));
+title('Bound IFN-I Dynamics');
+xlabel('Time (days)');
+ylabel('Bound IFN-I (pg/mL)');
+
+figure;
+subplot(4, 1, 1);
+plot(time, sol(12, :));
+title('Unbound IFN-gamma Dynamics');
+xlabel('Time (days)');
+ylabel('Unbound IFN-gamma (pg/mL)');
+
+subplot(4, 1, 2);
+plot(time, sol(13, :));
+title('bound IFN-gamma Dynamics');
+xlabel('Time (days)');
+ylabel('bound IFN-gamma (pg/mL)');
+
+subplot(4, 1, 3);
+plot(time, sol(14, :));
+title('Unbound tnf Dynamics');
+xlabel('Time (days)');
+ylabel('Unbound tnf (pg/mL)');
+
+subplot(4, 1, 4);
+plot(time, sol(15, :));
+title('bound tnf Dynamics');
+xlabel('Time (days)');
+ylabel('bound tnf (pg/mL)');
+
+figure;
+subplot(2, 1, 1);
+plot(time, sol(16, :));
+title('Unbound il6 Dynamics');
+xlabel('Time (days)');
+ylabel('Unbound il6 (pg/mL)');
+
+subplot(2, 1, 2);
+plot(time, sol(17, :));
+title('bound il6 Dynamics');
+xlabel('Time (days)');
+ylabel('bound il6 (pg/mL)');
