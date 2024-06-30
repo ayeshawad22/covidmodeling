@@ -1,0 +1,66 @@
+function [time, sol] = COVID_IMMUNE_MODEL(p, tspan)
+
+opts = ddeset('RelTol', 1e-6, 'AbsTol', 1e-6, 'MaxStep', 1e-2);
+solstruc = ddesd(@ddefun, @(t, y) delayP(t, y, p), @history, tspan, opts);
+
+time = solstruc.x;
+sol = solstruc.y;
+
+%------------------------------------------------------------------------
+function dydt = ddefun(t, y, Z)
+ylag = Z(:,1);
+
+V = y(1);
+S = y(2);
+I = y(3);
+R = y(4);
+D = y(5);
+MPhi_R = y(6);
+MPhi_I = y(7);
+N = y(8);
+K = y(9);
+F_U = y(10);
+F_B = y(11);
+Gamma_U = y(12);
+Gamma_B = y(13);
+alpha_U = y(14);
+alpha_B = y(15);
+L_U = y(16);
+L_B = y(17);
+
+% Differential equations
+dV = p.p * I - p.del_V_MPhi * MPhi_I * V - p.del_V_N * V * N - p.d_V * V;
+dS = p.lambda_S * (1 - (S + I + R + D) / p.Smax) * S - p.beta * S * V - p.rho * p.del_N * N^p.h_N / (N^p.h_N + p.IC50_N^p.h_N);
+dI = p.beta * (p.eps_F_I / (p.eps_F_I + F_B) + p.eps_Gamma_I / (p.eps_Gamma_I + Gamma_B)) * ylag(2) * ylag(1) - p.del_N * N^p.h_N / (N^p.h_N + p.IC50_N^p.h_N) * I - p.del_I_MPhi * MPhi_I * I - p.del_K_base * K * I - p.d_I * I;
+dR = p.lambda_S * (1 - (S + I + R + D) / p.Smax) * R + p.beta * (F_B / (p.eps_F_I + F_B) + Gamma_B / (p.eps_Gamma_I + Gamma_B)) * ylag(2) * ylag(1) - p.rho * p.del_N * N^p.h_N / (N^p.h_N + p.IC50_N^p.h_N) * R;
+dD = p.d_I * I + p.del_N * (p.rho * S + I) * N^p.h_N / (N^p.h_N + p.IC50_N^p.h_N) + p.del_K_base * K * I + (p.del_MPhi_D - p.del_D_MPhi) * (MPhi_R + MPhi_I) * D + p.del_I_MPhi * MPhi_I * I - p.d_D * D;
+dN = p.N_star_prod * p.NR + p.rho_N_L * L_B / (L_B + p.eps_L_N) - p.d_N * N;
+dMPhi_R = -p.a_I_MPhi * MPhi_R * (I + D) + (1 - MPhi_R / p.MPhi_max) * p.lambda_MPhi * MPhi_I / (V + p.eps_V_MPhi) - p.d_MPhi_R * MPhi_R - p.del_MPhi_D * D * MPhi_R;
+dMPhi_I = p.a_I_MPhi * MPhi_R * (I + D) + p.rho_MPhi_L * L_B / (L_B + p.eps_L_MPhiI) * MPhi_I - p.d_MPhi_I * MPhi_I - (1 - MPhi_R / p.MPhi_max) * p.lambda_MPhi * MPhi_I / (V + p.eps_V_MPhi)- (p.d_MPhiI_alpha_Gamma * (alpha_B*Gamma_B/(alpha_B*Gamma_B+p.eps_d)))*MPhi_I;
+dK = (p.rho_K_alpha * alpha_B / (alpha_B + p.eps_alpha_K) + p.rho_K_L * L_B / (L_B + p.eps_L_K)) * K - p.d_K * K;
+
+dF_U = p.p_F_I * I / (I + p.eta_F_I) + p.p_F_MPhiI * MPhi_I / (MPhi_I + p.eta_F_MPhiI) - p.k_lin_F * F_U - p.k_B_F * ((K + I) * p.A_F - F_B) * F_U + p.k_U_F * F_B;
+dF_B = -p.k_int_F * F_B + p.k_B_F * ((K + I) * p.A_F - F_B) * F_U - p.k_U_F * F_B;
+dGamma_U = p.p_Gamma_K * K / (K + p.eta_Gamma_K) - p.k_lin_Gamma * Gamma_U - p.k_B_Gamma * ((I + MPhi_I) * p.A_Gamma - Gamma_B) * Gamma_U + p.k_U_Gamma * Gamma_B;
+dGamma_B = -p.k_int_Gamma * Gamma_B + p.k_B_Gamma * ((I + MPhi_I) * p.A_Gamma - Gamma_B) * Gamma_U - p.k_U_Gamma * Gamma_B;
+dalpha_U = p.p_alpha_MPhiI * MPhi_I / (MPhi_I + p.eta_alpha_MPhiI) + p.p_alpha_K * K / (K + p.eta_alpha_K) - p.k_lin_alpha * alpha_U - p.k_B_alpha * ((I + MPhi_I + K) * p.A_alpha - alpha_B) * alpha_U + p.k_U_alpha * alpha_B;
+dalpha_B = -p.k_int_alpha * alpha_B + p.k_B_alpha * ((I + MPhi_I + K) * p.A_alpha - alpha_B) * alpha_U - p.k_U_alpha * alpha_B;
+dL_U = p.p_L_MPhiI * MPhi_I / (MPhi_I + p.eta_L_MPhiI) + p.p_L_I * I / (I + p.eta_L_I) - p.k_lin_L * L_U - p.k_B_L * ((MPhi_I + K + N) * p.A_L - L_B) * L_U + p.k_U_L * L_B;
+dL_B = -p.k_int_L * L_B + p.k_B_L * ((MPhi_I + K + N) * p.A_L - L_B) * L_U - p.k_U_L * L_B;
+
+dydt = [dV; dS; dI; dR; dD; dMPhi_R; dMPhi_I; dN; dK; dF_U; dF_B; dGamma_U; dGamma_B; dalpha_U; dalpha_B; dL_U; dL_B];
+
+end
+
+%————————————————————————
+function s = history(t)
+s = [p.V0; p.S0; p.I0; p.R0; p.D0; p.MPhi_R0; p.MPhi_I0; p.N0; p.K0; p.FU0; p.FB0; p.Gamma_U0; p.Gamma_B0; p.alpha_U0; p.alpha_B0; p.LU0; p.LB0];
+end
+
+%————————————————————————
+function d = delayP(t, y, p)
+% This function sets up the delay vectors necessary for the DDE solver.
+d = t - p.tau_I;  % Only one delay
+end
+
+end
