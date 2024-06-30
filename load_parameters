@@ -1,0 +1,140 @@
+function p = load_parameters()
+    % Viral Kinetic Parameters
+    p.p = 741; % Lytic viral production rate (1/day cop/ml/10^9 cells)
+    p.beta = 0.29; % Transmission rate (virus infection rate) (1/day cop/ml/10^9 cells)
+    p.Smax = 0.16; % Epithelial cells carrying capacity (10^9 cells)
+    p.MPhi_max = 2.7e-5; % Macrophage carrying capacity (10^9 cells)
+    p.tau_I = 0.1667; % delay value of Infected cell lysis from Jenner
+
+    % Cell Production, Recruitment, and Activation Rates
+    p.rho_MPhi_L = 6.8e-4; % Recruitment of macrophage by IL-6 (10^9 cells/ml/day)
+    p.rho_K_alpha = 0.4371; % Recruitment of Natural Killer Cells by TNF-alpha (1/day)
+    p.rho_K_L = 0.684; % Recruitment of Natural Killer Cells by IL-6 (1/day)
+    p.rho_N_L = 0.21; % Recruitment of Neutrophils by IL-6 (10^9 cells/ml/day)
+    p.a_I_MPhi = 1.11e3; % Activation of macrophages by infected and dead cells (10^9 cells/ml/day)
+    p.N_star_prod = 0.21; % Homeostasis reservoir release rate (1/day)
+
+    % Cell-related half-effect, IC50, and Hill Coefficient
+    p.eps_F_I = 4.7e-4; % Cell-related half effect IFN-I to infected cells (pg/ml)
+    p.eps_L_N = 57.2; % Cell-related half effect IL-6 to Neutrophils (pg/ml)
+    p.eps_Gamma_I = 4.7e-4; % Cell-related half effect IFN-gamma to infected cells (pg/ml)
+    p.eps_alpha_K = 2098; % Cell-related half-effect of TNF-alpha production to killer cells (pg/ml)
+    p.eps_V_MPhi = 2.96; % Viral load for macrophage replenishing (log (copies/ml))
+    p.eps_L_K = 5.88; % Cell-related half-effect of IL-6 to killer cells (pg/ml)
+    p.eps_L_MPhiI = 0.011; % Cell-related half effect of IL-6 to inflammatory macrophages (pg/ml)
+    p.eps_d = 0.1268e-4; % Dissociation constant for IFN-gamma and TNF-alpha synergy ((pg/ml)^2) - Value missing
+    p.h_N = 3.02; % Neutrophil induced damage
+    p.IC50_N = 0.047; % Neutrophil induced damage (10^9 cells/ml)
+
+    % Cell/Virus Induced death rates
+    p.del_V_N = 44.3; % Rate of viral clearance by neutrophils (ml/(10^9 cells) 1/day)
+    p.del_V_MPhi = 768; % Rate of viral clearance by macrophages (ml/(10^9 cells) 1/day)
+    p.del_MPhi_D = 6.06; % Rate macrophages die from phagocytosis (ml/(10^9 cells) 1/day)
+    p.del_D_MPhi = 8.03; % Rate macrophages phagocytose dead cells (ml/(10^9 cells) 1/day)
+    p.del_I_MPhi = 768; % Rate macrophages phagocytose infected cells (ml/(10^9 cells) 1/day)
+    p.del_N = 1.68; % Rate Neutrophil inflicted damage (1/day)
+    p.del_K_base = 1.2; % Base Rate Natural Killer Cell inflicted damage (1/day)
+    p.del_K_alpha = 0.3; % Cytotoxicity increase Rate of Natural Killer Cell by TNF-alpha (1/day)
+    p.del_K_Gamma = 0.3; % Cytotoxicity increase Rate of Natural Killer Cell by IFN-gamma (1/day)
+    p.del_K_L = 0.66; % Cytotoxicity inhibition Rate of Natural Killer Cell by IL-6 (1/day)
+    p.rho = 0.5; % Bystander death modulation constant
+
+    % Cell Death and Virus Decay Rates
+    p.d_V = 1.81; % Viral decay rate (1/day)
+    p.d_I = 0.014; % Death rate of infected cells (1/day)
+    p.d_D = 8; % Degradation rate of apoptosed cells (1/day)
+    p.d_K = 0.2; % Death rate of Natural Killer Cells (1/day) 
+    p.d_N = 1.28; % Death rate of Neutrophils (1/day)
+    p.d_D_MPhi = 1.97; % Cell death and virus decay rates (1/day)
+    p.d_MPhi_R = 0; % Alveolar macrophage death rate (1/day)
+    p.d_MPhi_I = 0.3; % Inflammatory macrophage death rate (1/day)
+    p.d_MPhiI_alpha_Gamma = 0.6082; % Inflammatory macrophage death rate by TNF and IFN (1/day) 
+
+    % Cytokine Production
+    p.p_F_I = 2.82; % Production of IFN-I by Infected Cells (pg/ml/day)
+    p.p_F_MPhiI = 1.3; % Production IFN-I by inflammatory macrophages (pg/ml/day)
+    p.p_Gamma_K = 548.4; % Production of IFN-gamma by killer cells (pg/ml/day)
+    p.p_alpha_K = 1276.32; % Production of TNF-alpha by Natural Killer Cells (pg/ml/day)
+    p.p_alpha_MPhiI = 1196.83; % Production of TNF-alpha By Inflammatory Macrophages (pg/ml/day)
+    p.p_L_I = 11.89; % Production rate of IL-6 by Infected Cells (pg/ml/day)
+    p.p_L_MPhiI = 1872; % Production rate of IL-6 from Inflammatory Macrophages (pg/ml/day)
+
+    % Cytokine Production Half Effect
+    p.eta_F_I = 0.011; % IFN-I by Infected cells (10^9 cells/ml)
+    p.eta_F_MPhiI = 1.3e-6; % IFN-I by inflammatory macrophages (10^9 cells/ml)
+    p.eta_Gamma_K = 4.1e-5; % Cytokine production half-effect of IFN-gamma by killer cells (10^9 cells/ml)
+    p.eta_alpha_MPhiI = 1.174e-5; % Half production rate of TNF-alpha By Inflammatory Macrophages (10^9 cells/ml)
+    p.eta_alpha_K = 2.9e-5; % Half Production rate of TNF-alpha By Natural Killers (10^9 cells/ml)
+    p.eta_L_MPhiI = 3.6e-5; % Half production rate of IL-6 by Macrophages (10^9 cells/ml)
+    p.eta_L_I = 0.7; % Half production rate of IL-6 by Infected cells (10^9 cells/ml)
+
+    % Cytokine Renal Clearance and Internalization Rates
+    p.k_int_F = 17; % Internalization rate of IFN-I (1/day)
+    p.k_lin_F = 18; % Rate of IFN-I renal clearance (1/day)
+    p.k_int_Gamma = 17; % Internalization rate of IFN-gamma (1/day)
+    p.k_lin_Gamma = 86.16; % Rate of IFN-gamma renal clearance (1/day)
+    p.k_int_alpha = 66.528; % Internalization rate of TNF-alpha (1/day)
+    p.k_lin_alpha = 75.84; % Rate of TNF-alpha renal clearance (1/day)
+    p.k_int_L = 61.8; % Internalization rate of IL-6 (1/day)
+    p.k_lin_L = 16.6; % Rate of IL-6 renal clearance (1/day)
+
+    % Cytokine Binding and Unbinding Rates
+    p.k_B_F = 0.011; % IFN-I binding rate (ml/pg/day)
+    p.k_U_F = 6.07; % IFN-I unbinding rate (1/day)
+    p.k_B_Gamma = 7.90e-4; % IFN-gamma binding rate (ml/pg/day)
+    p.k_U_Gamma = 326.59; % IFN-gamma unbinding rate (1/day)
+    p.k_B_alpha = 9.156e-3; % TNF-alpha Binding rate (ml/pg/day)
+    p.k_U_alpha = 30.24; % TNF-alpha unbinding rate (1/day)
+    p.k_B_L = 0.0018; % IL-6 binding rate (ml/pg/day)
+    p.k_U_L = 22.3; % IL-6 unbinding rate (1/day)
+
+    % Number of Cellular Receptors and Cytokine Molecular Weights
+
+    p.K_F_K = 1000; % Number of IFN-I receptors on NK cells (receptors/cell)
+    p.K_F_I = 1300; % Number of IFN-I receptors on Infected cells (receptors/cell)
+    p.K_Gamma_MPhiI = 12000; % Number of IFN-gamma receptors on macrophages (receptors/cell)
+    p.K_Gamma_I = 1300; % Number of IFN-gamma receptors on the infected cell (receptors/cell)
+    p.K_alpha_I = 1777; % Number of TNF-alpha receptors on the infected cell (receptors/cell)
+    p.K_alpha_MPhiI = 1500; % Number of TNF-alpha receptor on macrophages (receptors/cell)
+    p.K_alpha_K = 2000; % Number of TNF-alpha receptors on natural killer cells (receptors/cell)
+    p.K_L_K = 750; % Number of IL-6 receptors on natural killer cells (receptors/cell)
+    p.K_L_N = 720; % Number of IL-6 receptors on neutrophils (receptors/cell)
+    p.MM_Gamma = 25000; % Molar mass of IFN-gamma (g/mol)
+    p.MM_F = 19000; % Molar mass of IFN-I (g/mol)
+    p.MM_alpha = 17300; % Molar mass of TNF-alpha (g/mol)
+    p.MM_L = 21000; % Molar mass of IL-6 (g/mol)
+    p.avo=6.02214E23;           % avogadro's number
+    
+    % Proliferation Rates
+    p.lambda_S = 0.74; % Proliferation Rate of epithelial cells (1/day)
+    p.lambda_MPhi = 5942; % Proliferation of alveolar macrophages cells (cop/ml/day)
+
+    %Seffective
+    
+
+    %BINDING CONVERSION FACTOR
+    p.A_F = p.MM_F/p.avo*(p.K_F_K+p.K_F_I)*(1/5000)*10^9*1e12;% IFN 1
+    p.A_Gamma = p.MM_Gamma/p.avo*(p.K_Gamma_MPhiI+p.K_Gamma_I)*(1/5000)*10^9*1e12 %IFN Gamma
+    p.A_alpha = p.MM_alpha/p.avo*(p.K_alpha_I+p.K_alpha_MPhiI+p.K_alpha_K)*(1/5000)*10^9*1e12 %tnf alpha
+    p.A_L = p.MM_L/p.avo*(p.K_L_K+p.K_L_N)*(1/5000)*10^9*1e12;% IL-6
+    
+    
+    % Initial Conditions
+    p.V0 = 12; % Initial viral load (cop/ml)
+    p.S0 = 0.16; % Initial susceptible cells (10^9 cells/ml)
+    p.I0 = 0; % Initial infected cells (10^9 cells/ml)
+    p.R0 = 0; % Initial resistant cells (10^9 cells/ml)
+    p.D0 = 0; % Initial Dead Cells (10^9 cells/ml)
+    p.MPhi_R0 = 2.7e-5; % Initial resident macrophages (10^9 cells/ml)
+    p.MPhi_I0 = 2.9e-7; % Initial inflammatory macrophages (10^9 cells/ml)
+    p.K0 = 7.8e-5; % Initial natural killer cells (10^9 cells/ml)
+    p.N0 = 0.0053; % Initial neutrophils (10^9 cells/ml)
+    p.NR = 0.0316; % Initial reservoir neutrophils (10^9 cells/ml)
+    p.FU0 = 0.015; % Initial unbound IFN-I (pg/ml)
+    p.FB0 = 1.1e-8; % Initial bound IFN-I (pg/ml)
+    p.Gamma_U0 = 1.5; % Initial unbound IFN-gamma (pg/ml)
+    p.Gamma_B0 = 1.1428e-8; % Initial bound IFN-gamma (pg/ml)
+    p.alpha_U0 = 1.2; % Initial unbound TNF-alpha (pg/ml)
+    p.alpha_B0 = 1.54e-9; % Initial bound TNF-alpha (pg/ml)
+    p.LU0 = 1.1; % Initial unbound IL-6 (pg/ml)
+    p.LB0 = 1.4e-6; % Initial bound IL-6 (pg/ml)
